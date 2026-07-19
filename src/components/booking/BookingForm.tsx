@@ -38,18 +38,47 @@ export function BookingForm() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
 
-  const handleSimulateAI = () => {
-    toast.info("Analyzing image using AI...", { duration: 2000 });
-    setTimeout(() => {
-      setImageUploaded(true);
-      setAiResult({
-        category: CATEGORIES.find(c => c.id === categoryId)?.name || "Electronic Device",
-        condition: "Used/End of life",
-        recyclability: "High (85% recoverable)",
-        hazardous: "Contains Lithium-ion battery (Handle with care)"
-      });
-      toast.success("AI Analysis Complete!");
-    }, 2000);
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // We need to compress/resize the image if it's too large, but for now just read as base64
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const base64 = event.target?.result as string;
+      
+      toast.info("Analyzing image using Google Gemini AI...");
+      try {
+        const res = await fetch("/api/ai/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageBase64: base64 })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setAiResult(data);
+          setImageUploaded(true);
+          
+          // Try to match the category based on string includes
+          const foundCategory = CATEGORIES.find(c => 
+            data.category.toLowerCase().includes(c.name.toLowerCase()) ||
+            c.name.toLowerCase().includes(data.category.toLowerCase().split(" ")[0])
+          );
+          if (foundCategory) {
+            setCategoryId(foundCategory.id);
+          }
+          
+          toast.success("AI Analysis Complete!");
+        } else {
+          const errData = await res.json();
+          toast.error(errData.message || "Failed to analyze image");
+        }
+      } catch (error) {
+        toast.error("Network error during AI analysis");
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async () => {
@@ -65,7 +94,7 @@ export function BookingForm() {
           address,
           scheduledDate: new Date(date).toISOString(),
           scheduledTime: time,
-          images: "mock-url-from-ai"
+          images: "user-uploaded-image" // In a real app we'd upload to S3/Cloudinary and store the URL
         })
       });
 
@@ -145,14 +174,12 @@ export function BookingForm() {
             <div className="space-y-2">
               <Label>Upload Image for AI Analysis</Label>
               {!imageUploaded ? (
-                <div 
-                  onClick={handleSimulateAI}
-                  className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-10 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors"
-                >
+                <label className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-10 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
                   <UploadCloud className="h-10 w-10 text-slate-400 mb-4" />
                   <p className="font-medium">Click to upload or drag and drop</p>
-                  <p className="text-sm text-slate-500 mt-1">Our AI will automatically categorize your item (Demo)</p>
-                </div>
+                  <p className="text-sm text-slate-500 mt-1">Gemini AI will automatically categorize your item and detect hazards.</p>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                </label>
               ) : (
                 <div className="bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800 p-4 rounded-lg">
                   <div className="flex items-start justify-between">

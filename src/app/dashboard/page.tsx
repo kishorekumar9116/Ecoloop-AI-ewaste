@@ -4,6 +4,7 @@ import { IndividualDashboard } from "@/components/dashboard/IndividualDashboard"
 import { AdminDashboard } from "@/components/dashboard/AdminDashboard";
 import { CollectorDashboard } from "@/components/dashboard/CollectorDashboard";
 import { RecyclerDashboard } from "@/components/dashboard/RecyclerDashboard";
+import { BusinessDashboard } from "@/components/dashboard/BusinessDashboard";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 
@@ -35,6 +36,7 @@ export default async function DashboardPage() {
     case "RECYCLER":
       return <RecyclerDashboard user={user} />;
     case "BUSINESS":
+      return <BusinessDashboard user={user} />;
     case "INDIVIDUAL":
     default:
       return <IndividualDashboard user={user} />;

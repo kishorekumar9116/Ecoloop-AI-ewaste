@@ -27,6 +27,7 @@ export function BusinessDashboard({ user }: { user: Record<string, any> }) {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchPickups();
   }, []);
 

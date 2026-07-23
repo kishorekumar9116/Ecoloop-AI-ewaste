@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -29,7 +30,7 @@ export default function TrackPage() {
       } else {
         setError("Tracking ID not found. Please check and try again.");
       }
-    } catch (err) {
+    } catch (error: unknown) {
       setError("An error occurred while fetching tracking details.");
     } finally {
       setIsSearching(false);

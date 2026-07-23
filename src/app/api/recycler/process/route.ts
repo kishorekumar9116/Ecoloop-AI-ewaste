@@ -85,7 +85,7 @@ export async function POST(req: Request) {
 
     return NextResponse.redirect(new URL("/recycler/dashboard/processing", req.url), 303);
     
-  } catch (error: any) {
+  } catch (error) {
     console.error("Process batch error:", error);
     return NextResponse.redirect(new URL("/recycler/dashboard/processing?error=process_failed", req.url), 303);
   }

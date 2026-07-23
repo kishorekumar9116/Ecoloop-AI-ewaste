@@ -50,7 +50,7 @@ export async function POST(req: Request) {
 
     return NextResponse.redirect(new URL("/recycler/dashboard/incoming", req.url), 303);
     
-  } catch (error: any) {
+  } catch (error) {
     console.error("Receive batch error:", error);
     return NextResponse.redirect(new URL("/recycler/dashboard/incoming?error=receive_failed", req.url), 303);
   }

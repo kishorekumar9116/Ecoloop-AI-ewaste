@@ -41,7 +41,7 @@ export async function POST(req: Request) {
 
     return NextResponse.redirect(new URL("/collector/dashboard/pickups", req.url), 303);
     
-  } catch (error: any) {
+  } catch (error) {
     console.error("Arrive pickup error:", error);
     return NextResponse.redirect(new URL("/collector/dashboard/pickups?error=arrive_failed", req.url), 303);
   }

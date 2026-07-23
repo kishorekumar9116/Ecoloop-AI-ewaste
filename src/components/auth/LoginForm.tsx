@@ -195,7 +195,7 @@ export function LoginForm() {
         </CardContent>
         <CardFooter className="flex justify-center border-t p-6 bg-slate-50 dark:bg-slate-900/50 rounded-b-xl">
           <p className="text-sm text-slate-500">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link href="/register" className="text-green-600 hover:text-green-700 font-semibold dark:text-green-400">
               Sign up as Customer
             </Link>

@@ -38,7 +38,7 @@ export default async function CollectorPickupsPage() {
           <CardContent>
             <Truck className="h-12 w-12 mx-auto text-slate-300 mb-4" />
             <h3 className="text-xl font-medium mb-2">No active pickups</h3>
-            <p className="text-slate-500 mb-6">You haven't accepted any pickup requests yet.</p>
+            <p className="text-slate-500 mb-6">You haven&apos;t accepted any pickup requests yet.</p>
             <Link href="/collector/dashboard/available">
               <Button className="bg-orange-600 hover:bg-orange-700">Find Available Pickups</Button>
             </Link>

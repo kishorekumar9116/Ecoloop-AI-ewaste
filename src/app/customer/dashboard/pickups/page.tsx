@@ -55,7 +55,7 @@ export default async function CustomerPickupsPage() {
           <CardContent>
             <Package className="h-12 w-12 mx-auto text-slate-300 mb-4" />
             <h3 className="text-xl font-medium mb-2">No pickups found</h3>
-            <p className="text-slate-500 mb-6">You haven't scheduled any e-waste pickups yet.</p>
+            <p className="text-slate-500 mb-6">You haven&apos;t scheduled any e-waste pickups yet.</p>
             <Link href="/customer/dashboard/book">
               <Button>Schedule your first pickup</Button>
             </Link>

@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     // If it's a standard form submission, we can use NextResponse.redirect
     return NextResponse.redirect(new URL("/collector/dashboard/pickups", req.url), 303);
     
-  } catch (error: any) {
+  } catch (error) {
     console.error("Accept pickup error:", error);
     return NextResponse.redirect(new URL("/collector/dashboard/available?error=unavailable", req.url), 303);
   }

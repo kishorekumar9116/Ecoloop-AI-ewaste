@@ -6,14 +6,21 @@ export default withAuth(
     const token = req.nextauth.token;
     const path = req.nextUrl.pathname;
 
-    if (!token) {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
+    if (!token) return NextResponse.redirect(new URL("/login", req.url));
 
-    // Role-based routing logic can be added here
-    // Example: Redirect collectors away from admin pages
-    if (path.startsWith("/dashboard/admin") && token.role !== "ADMIN") {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
+    const role = token.role as string;
+    
+    if (path.startsWith("/customer") && role !== "CUSTOMER") {
+      return NextResponse.redirect(new URL(`/${role.toLowerCase()}/dashboard`, req.url));
+    }
+    if (path.startsWith("/collector") && role !== "COLLECTOR") {
+      return NextResponse.redirect(new URL(`/${role.toLowerCase()}/dashboard`, req.url));
+    }
+    if (path.startsWith("/recycler") && role !== "RECYCLER") {
+      return NextResponse.redirect(new URL(`/${role.toLowerCase()}/dashboard`, req.url));
+    }
+    if (path.startsWith("/admin") && role !== "ADMIN") {
+      return NextResponse.redirect(new URL(`/${role.toLowerCase()}/dashboard`, req.url));
     }
   },
   {
@@ -24,5 +31,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/track/:path*", "/api/protected/:path*"],
+  matcher: ["/customer/:path*", "/collector/:path*", "/recycler/:path*", "/admin/:path*", "/api/protected/:path*"],
 };

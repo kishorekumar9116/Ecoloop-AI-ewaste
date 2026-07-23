@@ -4,71 +4,119 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { 
-  BarChart3, 
-  Box, 
-  Calendar, 
   Home, 
   Leaf, 
   Settings, 
   Truck, 
   Users,
-  Award
+  Award,
+  Calendar,
+  Box,
+  MapPin,
+  CheckCircle,
+  FileText
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function Sidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const role = session?.user?.role || "INDIVIDUAL";
+  const role = session?.user?.role || "CUSTOMER";
+  const prefix = `/${role.toLowerCase()}/dashboard`;
 
   const navItems = [
     {
       title: "Dashboard",
-      href: "/dashboard",
+      href: prefix,
       icon: Home,
-      roles: ["INDIVIDUAL", "BUSINESS", "COLLECTOR", "RECYCLER", "ADMIN"],
+      roles: ["CUSTOMER", "COLLECTOR", "RECYCLER", "ADMIN"],
+    },
+    // CUSTOMER ITEMS
+    {
+      title: "Schedule Pickup",
+      href: `${prefix}/book`,
+      icon: Truck,
+      roles: ["CUSTOMER"],
     },
     {
       title: "My Pickups",
-      href: "/dashboard/pickups",
+      href: `${prefix}/pickups`,
       icon: Calendar,
-      roles: ["INDIVIDUAL", "BUSINESS"],
+      roles: ["CUSTOMER"],
     },
     {
-      title: "Assigned Pickups",
-      href: "/dashboard/tasks",
-      icon: Truck,
+      title: "Certificates",
+      href: `${prefix}/certificates`,
+      icon: FileText,
+      roles: ["CUSTOMER"],
+    },
+    {
+      title: "Rewards",
+      href: `${prefix}/rewards`,
+      icon: Award,
+      roles: ["CUSTOMER"],
+    },
+    
+    // COLLECTOR ITEMS
+    {
+      title: "Available Pickups",
+      href: `${prefix}/available`,
+      icon: Box,
       roles: ["COLLECTOR"],
     },
     {
-      title: "Incoming Batches",
-      href: "/dashboard/batches",
+      title: "My Pickups",
+      href: `${prefix}/pickups`,
+      icon: Calendar,
+      roles: ["COLLECTOR"],
+    },
+    {
+      title: "Today's Route",
+      href: `${prefix}/route`,
+      icon: MapPin,
+      roles: ["COLLECTOR"],
+    },
+
+    // RECYCLER ITEMS
+    {
+      title: "Incoming E-Waste",
+      href: `${prefix}/incoming`,
+      icon: Truck,
+      roles: ["RECYCLER"],
+    },
+    {
+      title: "Processing",
+      href: `${prefix}/processing`,
       icon: Box,
       roles: ["RECYCLER"],
     },
     {
-      title: "Rewards",
-      href: "/dashboard/rewards",
-      icon: Award,
-      roles: ["INDIVIDUAL", "BUSINESS"],
+      title: "Completed",
+      href: `${prefix}/completed`,
+      icon: CheckCircle,
+      roles: ["RECYCLER"],
     },
-    {
-      title: "Impact Report",
-      href: "/dashboard/impact",
-      icon: BarChart3,
-      roles: ["BUSINESS", "RECYCLER", "ADMIN"],
-    },
+
+    // ADMIN ITEMS
     {
       title: "Manage Users",
-      href: "/dashboard/users",
+      href: `${prefix}/users`,
       icon: Users,
       roles: ["ADMIN"],
     },
     {
+      title: "Manage Pickups",
+      href: `${prefix}/pickups`,
+      icon: Box,
+      roles: ["ADMIN"],
+    },
+
+    // COMMON
+    {
       title: "Settings",
-      href: "/dashboard/settings",
+      href: `${prefix}/settings`,
       icon: Settings,
-      roles: ["INDIVIDUAL", "BUSINESS", "COLLECTOR", "RECYCLER", "ADMIN"],
+      roles: ["CUSTOMER", "COLLECTOR", "RECYCLER", "ADMIN"],
     },
   ];
 
@@ -86,7 +134,8 @@ export function Sidebar() {
         <div className="flex-1 overflow-auto py-4">
           <nav className="grid items-start px-4 text-sm font-medium gap-1">
             {filteredNavItems.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              // Exact match or prefix match for active state
+              const isActive = pathname === item.href || (pathname.startsWith(`${item.href}/`) && item.href !== prefix);
               return (
                 <Link
                   key={item.href}
@@ -112,7 +161,7 @@ export function Sidebar() {
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-medium leading-none">{session?.user?.name}</span>
-              <span className="text-xs text-slate-500 mt-1 capitalize">{role.toLowerCase()}</span>
+              <span className="text-xs text-slate-500 mt-1 uppercase">{role}</span>
             </div>
           </div>
         </div>

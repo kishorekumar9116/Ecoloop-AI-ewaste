@@ -101,9 +101,9 @@ export function RegisterForm() {
         redirect: false,
       });
 
-      if (!result?.error) {
-        router.push("/dashboard");
-        router.refresh();
+      if (result?.ok) {
+        toast.success("Registration successful!");
+        router.push("/customer/dashboard");
       } else {
         router.push("/login");
       }

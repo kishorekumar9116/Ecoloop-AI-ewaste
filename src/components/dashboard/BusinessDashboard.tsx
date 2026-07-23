@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -7,13 +8,9 @@ import { Plus, Recycle, Clock, Award, Leaf, Building, Globe } from "lucide-react
 import Link from "next/link";
 import { toast } from "sonner";
 
-export function BusinessDashboard({ user }: { user: any }) {
+export function BusinessDashboard({ user }: { user: Record<string, any> }) {
   const [pickups, setPickups] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    fetchPickups();
-  }, []);
 
   const fetchPickups = async () => {
     try {
@@ -28,6 +25,10 @@ export function BusinessDashboard({ user }: { user: any }) {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchPickups();
+  }, []);
 
   const calculateTotalWeight = () => {
     let total = 0;

@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,14 +9,8 @@ datasource db {
   provider = "sqlite"
 }
 
-enum Role {
-  INDIVIDUAL
-  BUSINESS
-  COLLECTOR
-  RECYCLER
-  ADMIN
-}
-
+// User role (Using String since SQLite doesn't natively support enum)
+// CUSTOMER, COLLECTOR, RECYCLER, ADMIN
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -27,10 +18,13 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
-  role          String    @default("INDIVIDUAL") // using String instead of enum because SQLite doesn't support enums natively
+  role          String    @default("CUSTOMER") 
   phone         String?
   city          String?
   state         String?
+  serviceArea   String?   // For collectors
+  companyName   String?   // For recyclers
+  accountStatus String    @default("ACTIVE") // ACTIVE, PENDING, DISABLED
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -40,6 +34,8 @@ model User {
   collectorAssignments PickupAssignment[]
   ecoPoints     EcoPointTransaction[]
   certificates  Certificate[]
+  notifications Notification[]
+  batches       CollectionBatch[] @relation("RecyclerBatches") // Batches assigned to recycler
 }
 
 model Account {
@@ -69,14 +65,6 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
 model WasteCategory {
   id          String   @id @default(cuid())
   name        String   @unique
@@ -86,18 +74,28 @@ model WasteCategory {
   updatedAt   DateTime @updatedAt
   
   items       PickupItem[]
+  batches     CollectionBatch[]
 }
 
 model PickupRequest {
-  id            String   @id @default(cuid())
-  userId        String
-  pickupId      String   @unique // ECO-2026-000001
-  status        String   @default("REQUESTED") // REQUESTED, CONFIRMED, ASSIGNED, IN_PROGRESS, COLLECTED, SORTED, RECEIVED, RECYCLING, COMPLETED
-  address       String
-  scheduledDate DateTime
-  scheduledTime String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id               String   @id @default(cuid())
+  userId           String
+  pickupId         String   @unique // ECO-PICK-000001
+  status           String   @default("PICKUP_REQUESTED")
+  address          String
+  city             String?
+  state            String?
+  pincode          String?
+  scheduledDate    DateTime?
+  scheduledTime    String?
+  customerPrefDate DateTime?
+  customerPrefTime String?
+  additionalNotes  String?
+  verificationCode String?  // 6-digit code for collection
+  collectionNotes  String?
+  collectionImage  String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   user          User           @relation(fields: [userId], references: [id])
   items         PickupItem[]
@@ -112,6 +110,8 @@ model PickupItem {
   categoryId      String
   quantity        Int
   estimatedWeight Float
+  deviceType      String?
+  condition       String?
   images          String // Comma separated URLs
 
   pickupRequest   PickupRequest @relation(fields: [pickupRequestId], references: [id], onDelete: Cascade)
@@ -123,8 +123,9 @@ model PickupAssignment {
   pickupRequestId String   @unique
   collectorId     String
   assignedAt      DateTime @default(now())
-  status          String   @default("PENDING") // PENDING, ACCEPTED, EN_ROUTE, ARRIVED, COMPLETED, CANCELLED
+  status          String   @default("PICKUP_ACCEPTED") // PICKUP_ACCEPTED, COLLECTOR_ON_THE_WAY, COLLECTOR_ARRIVED, COLLECTED
   actualWeight    Float?
+  actualQuantity  Int?
 
   pickupRequest   PickupRequest @relation(fields: [pickupRequestId], references: [id])
   collector       User          @relation(fields: [collectorId], references: [id])
@@ -133,17 +134,48 @@ model PickupAssignment {
 model CollectionBatch {
   id              String   @id @default(cuid())
   pickupRequestId String   @unique
-  batchId         String   @unique // BATCH-2026-001
-  qrCode          String   @unique
-  status          String   @default("COLLECTED")
+  batchId         String   @unique // ECO-BATCH-000001
+  qrCode          String?  @unique
+  status          String   @default("AT_COLLECTION_CENTER") // SENT_TO_RECYCLER, RECYCLER_RECEIVED, RECYCLING_IN_PROGRESS, RECYCLED, COMPLETED
   currentLocation String?
   recyclerId      String?
+  categoryId      String?
+  actualWeight    Float?
   verifiedWeight  Float?
+  collectionDate  DateTime?
+  dispatchDate    DateTime?
+  receivedDate    DateTime?
+  completionDate  DateTime?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   pickupRequest   PickupRequest @relation(fields: [pickupRequestId], references: [id])
+  recycler        User?         @relation("RecyclerBatches", fields: [recyclerId], references: [id])
+  category        WasteCategory? @relation(fields: [categoryId], references: [id])
   certificate     Certificate?
+  recyclingRecord RecyclingRecord?
+  materials       RecoveredMaterial[]
+}
+
+model RecyclingRecord {
+  id               String   @id @default(cuid())
+  batchId          String   @unique
+  processingDate   DateTime @default(now())
+  processingMethod String?
+  notes            String?
+
+  batch            CollectionBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+}
+
+model RecoveredMaterial {
+  id              String   @id @default(cuid())
+  batchId         String
+  materialName    String
+  recoveredWeight Float
+  unit            String   @default("kg")
+  notes           String?
+
+  batch           CollectionBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
 }
 
 model TrackingEvent {
@@ -152,18 +184,22 @@ model TrackingEvent {
   status          String
   location        String?
   notes           String?
+  responsibleRole String?
   timestamp       DateTime @default(now())
 
-  pickupRequest   PickupRequest @relation(fields: [pickupRequestId], references: [id])
+  pickupRequest   PickupRequest @relation(fields: [pickupRequestId], references: [id], onDelete: Cascade)
 }
 
 model Certificate {
-  id              String   @id @default(cuid())
-  batchId         String   @unique
-  userId          String
-  certificateId   String   @unique // CERT-2026-001
-  issueDate       DateTime @default(now())
-  documentUrl     String?
+  id                    String   @id @default(cuid())
+  batchId               String   @unique
+  userId                String
+  certificateId         String   @unique // ECO-CERT-000001
+  issueDate             DateTime @default(now())
+  documentUrl           String?
+  wasteCategory         String?
+  collectedWeight       Float?
+  verifiedRecycledWeight Float?
 
   batch           CollectionBatch @relation(fields: [batchId], references: [id])
   user            User            @relation(fields: [userId], references: [id])
@@ -177,5 +213,16 @@ model EcoPointTransaction {
   description String
   createdAt   DateTime @default(now())
 
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  message     String
+  type        String   @default("INFO")
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

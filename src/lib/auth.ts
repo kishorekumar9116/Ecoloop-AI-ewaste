@@ -9,11 +9,12 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
+        role: { label: "Role", type: "text" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
+        if (!credentials?.email || !credentials?.password || !credentials?.role) {
+          throw new Error("Missing credentials");
         }
 
         const user = await prisma.user.findUnique({
@@ -23,7 +24,7 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user || !user.password) {
-          return null;
+          throw new Error("Invalid credentials");
         }
 
         const isPasswordValid = await bcrypt.compare(
@@ -32,7 +33,11 @@ export const authOptions: NextAuthOptions = {
         );
 
         if (!isPasswordValid) {
-          return null;
+          throw new Error("Invalid credentials");
+        }
+
+        if (user.role !== credentials.role) {
+          throw new Error(`This account is not registered as a ${credentials.role.charAt(0) + credentials.role.slice(1).toLowerCase()}.`);
         }
 
         return {

@@ -1,101 +1,106 @@
-import { PrismaClient } from "@prisma/client";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
-import bcrypt from "bcryptjs";
-
-const adapter = new PrismaLibSql({ url: "file:dev.db" });
-
-const prisma = new PrismaClient({ adapter });
+import prisma from '../src/lib/prisma'
+import bcrypt from 'bcryptjs'
 
 async function main() {
-  console.log("Seeding database...");
+  console.log('Seeding database with demo data...')
 
-  // 1. Categories
-  const categories = [
-    { id: "cat_1", name: "Smartphones", basePoints: 50 },
-    { id: "cat_2", name: "Laptops & Computers", basePoints: 150 },
-    { id: "cat_3", name: "Televisions", basePoints: 100 },
-    { id: "cat_4", name: "Batteries", basePoints: 20 },
-  ];
+  // Create waste categories
+  const category1 = await prisma.wasteCategory.upsert({
+    where: { name: 'Mobile Phones' },
+    update: {},
+    create: {
+      name: 'Mobile Phones',
+      description: 'Smartphones and feature phones',
+      basePoints: 100,
+    },
+  })
 
-  for (const cat of categories) {
-    await prisma.wasteCategory.upsert({
-      where: { id: cat.id },
-      update: {},
-      create: {
-        id: cat.id,
-        name: cat.name,
-        basePoints: cat.basePoints,
-        description: `Recycle your ${cat.name.toLowerCase()} here.`
-      }
-    });
-  }
+  const category2 = await prisma.wasteCategory.upsert({
+    where: { name: 'Laptops' },
+    update: {},
+    create: {
+      name: 'Laptops',
+      description: 'Laptops and notebooks',
+      basePoints: 500,
+    },
+  })
 
-  // 2. Users
-  const password = await bcrypt.hash("password123", 12);
+  // Create users
+  const passwordHash = await bcrypt.hash('demo123', 10)
 
-  const users = [
-    { email: "user@ecoloop.ai", name: "Demo User", role: "INDIVIDUAL" },
-    { email: "collector@ecoloop.ai", name: "Green Collect Inc", role: "COLLECTOR" },
-    { email: "recycler@ecoloop.ai", name: "Eco Processors", role: "RECYCLER" },
-    { email: "admin@ecoloop.ai", name: "System Admin", role: "ADMIN" },
-  ];
+  // 1. Customer
+  const customer = await prisma.user.upsert({
+    where: { email: 'customer@ecoloop.demo' },
+    update: { role: 'CUSTOMER' },
+    create: {
+      email: 'customer@ecoloop.demo',
+      name: 'Demo Customer',
+      password: passwordHash,
+      role: 'CUSTOMER',
+      phone: '1234567890',
+      city: 'San Francisco',
+      state: 'CA'
+    },
+  })
 
-  for (const u of users) {
-    await prisma.user.upsert({
-      where: { email: u.email },
-      update: {},
-      create: {
-        email: u.email,
-        name: u.name,
-        role: u.role,
-        password: password,
-        city: "San Francisco",
-        state: "CA",
-      }
-    });
-  }
+  // 2. Collector
+  const collector = await prisma.user.upsert({
+    where: { email: 'collector@ecoloop.demo' },
+    update: { role: 'COLLECTOR' },
+    create: {
+      email: 'collector@ecoloop.demo',
+      name: 'Demo Collector',
+      password: passwordHash,
+      role: 'COLLECTOR',
+      phone: '9876543210',
+      city: 'San Francisco',
+      state: 'CA',
+      serviceArea: 'San Francisco Bay Area'
+    },
+  })
 
-  const demoUser = await prisma.user.findUnique({ where: { email: "user@ecoloop.ai" }});
-  
-  if (demoUser) {
-    // 3. Pickup Requests
-    const pickup = await prisma.pickupRequest.upsert({
-      where: { pickupId: "ECO-2026-000001" },
-      update: {},
-      create: {
-        pickupId: "ECO-2026-000001",
-        userId: demoUser.id,
-        address: "123 Green Avenue, SF, CA",
-        scheduledDate: new Date(),
-        scheduledTime: "Morning (9 AM - 12 PM)",
-        status: "REQUESTED",
-        items: {
-          create: {
-            categoryId: "cat_2",
-            quantity: 2,
-            estimatedWeight: 4.5,
-            images: "demo-image-url"
-          }
-        },
-        events: {
-          create: [
-            { status: "REQUESTED", notes: "Pickup requested by user." }
-          ]
-        }
-      }
-    });
+  // 3. Recycler
+  const recycler = await prisma.user.upsert({
+    where: { email: 'recycler@ecoloop.demo' },
+    update: { role: 'RECYCLER' },
+    create: {
+      email: 'recycler@ecoloop.demo',
+      name: 'Demo Recycler',
+      password: passwordHash,
+      role: 'RECYCLER',
+      phone: '5555555555',
+      city: 'San Jose',
+      state: 'CA',
+      companyName: 'GreenTech Recycling Inc.'
+    },
+  })
 
-    console.log(`Created pickup ${pickup.pickupId}`);
-  }
+  // 4. Admin
+  const admin = await prisma.user.upsert({
+    where: { email: 'admin@ecoloop.demo' },
+    update: { role: 'ADMIN' },
+    create: {
+      email: 'admin@ecoloop.demo',
+      name: 'System Admin',
+      password: passwordHash,
+      role: 'ADMIN'
+    },
+  })
 
-  console.log("Seeding complete!");
+  console.log('Seeding complete!')
+  console.log({
+    customer: customer.email,
+    collector: collector.email,
+    recycler: recycler.email,
+    admin: admin.email
+  })
 }
 
 main()
   .catch((e) => {
-    console.error(e);
-    process.exit(1);
+    console.error(e)
+    process.exit(1)
   })
   .finally(async () => {
-    await prisma.$disconnect();
-  });
+    await prisma.$disconnect()
+  })

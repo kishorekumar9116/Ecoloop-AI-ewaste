@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Recycle, Clock, Award, Leaf, Truck } from "lucide-react";
 import Link from "next/link";
 
-export function IndividualDashboard({ user }: { user: any }) {
+export function CustomerDashboard({ user }: { user: Record<string, any> }) {
   const totalPickups = user.pickupRequests?.length || 0;
   const completedPickups = user.pickupRequests?.filter((p: any) => p.status === "COMPLETED" || p.status === "RECYCLING").length || 0;
   const upcomingPickups = totalPickups - completedPickups;
@@ -18,7 +21,7 @@ export function IndividualDashboard({ user }: { user: any }) {
           <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user.name?.split(" ")[0]}!</h1>
           <p className="text-muted-foreground">Here is your e-waste recycling summary.</p>
         </div>
-        <Link href="/dashboard/book">
+        <Link href="/customer/dashboard/book">
           <Button className="bg-green-600 hover:bg-green-700 gap-2">
             <Plus className="h-4 w-4" /> Schedule Pickup
           </Button>
@@ -78,7 +81,7 @@ export function IndividualDashboard({ user }: { user: any }) {
                 <p className="text-sm text-slate-500 max-w-sm mx-auto mt-1 mb-4">
                   Schedule your first e-waste pickup to start earning EcoPoints and making an impact.
                 </p>
-                <Link href="/dashboard/book">
+                <Link href="/customer/dashboard/book">
                   <Button variant="outline">Schedule Pickup</Button>
                 </Link>
               </div>

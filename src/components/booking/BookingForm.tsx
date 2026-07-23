@@ -99,9 +99,8 @@ export function BookingForm() {
       });
 
       if (res.ok) {
-        toast.success("Pickup scheduled successfully!");
-        router.push("/dashboard/pickups");
-        router.refresh();
+        toast.success("Pickup request submitted successfully!");
+        router.push("/customer/dashboard/pickups");
       } else {
         toast.error("Failed to schedule pickup");
       }
@@ -113,24 +112,26 @@ export function BookingForm() {
   };
 
   return (
-    <Card className="w-full max-w-3xl mx-auto shadow-sm">
-      <CardHeader>
-        <div className="flex items-center justify-between mb-8 relative">
-          <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-100 -z-10 -translate-y-1/2"></div>
-          <div className="absolute top-1/2 left-0 h-1 bg-green-500 -z-10 -translate-y-1/2 transition-all duration-300" style={{ width: `${((step - 1) / 3) * 100}%` }}></div>
+    <Card className="w-full max-w-3xl mx-auto shadow-xl shadow-green-500/5 rounded-3xl border-slate-200/60 dark:border-slate-800/60">
+      <CardHeader className="bg-slate-50/50 dark:bg-slate-900/20 rounded-t-3xl pb-8 border-b border-slate-100 dark:border-slate-800/50">
+        <div className="flex items-center justify-between mb-8 relative px-4">
+          <div className="absolute top-1/2 left-8 right-8 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full -z-10 -translate-y-1/2"></div>
+          <div className="absolute top-1/2 left-8 h-1.5 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full -z-10 -translate-y-1/2 transition-all duration-500 ease-in-out" style={{ width: `calc(${((step - 1) / 3) * 100}% - 4rem)` }}></div>
           
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium border-2 ${
-              step >= i 
-                ? "bg-green-600 border-green-600 text-white" 
-                : "bg-white border-slate-200 text-slate-400"
+            <div key={i} className={`h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-all duration-300 ${
+              step > i 
+                ? "bg-green-500 border-green-500 text-white shadow-lg shadow-green-500/30 scale-105" 
+                : step === i
+                  ? "bg-white dark:bg-slate-950 border-green-500 text-green-600 dark:text-green-400 ring-4 ring-green-50 dark:ring-green-900/30 scale-110"
+                  : "bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-700 text-slate-400"
             }`}>
-              {step > i ? <Check className="h-4 w-4" /> : i}
+              {step > i ? <Check className="h-5 w-5" /> : i}
             </div>
           ))}
         </div>
-        <CardTitle>Schedule E-Waste Pickup</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-3xl text-center font-bold tracking-tight">Schedule E-Waste Pickup</CardTitle>
+        <CardDescription className="text-center text-base">
           {step === 1 && "Select the type of electronic waste."}
           {step === 2 && "Provide details and upload images for AI analysis."}
           {step === 3 && "Where and when should we pick this up?"}
@@ -145,14 +146,14 @@ export function BookingForm() {
               <div 
                 key={cat.id} 
                 onClick={() => setCategoryId(cat.id)}
-                className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col items-center justify-center text-center gap-3 ${
+                className={`p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 flex flex-col items-center justify-center text-center gap-4 hover:shadow-lg ${
                   categoryId === cat.id 
-                    ? "border-green-600 bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400" 
-                    : "border-slate-200 hover:border-green-300 dark:border-slate-800"
+                    ? "border-green-500 bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400 shadow-md transform -translate-y-1" 
+                    : "border-slate-100 hover:border-green-300 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-50 dark:hover:bg-slate-900"
                 }`}
               >
-                <cat.icon className="h-8 w-8" />
-                <span className="text-sm font-medium">{cat.name}</span>
+                <cat.icon className={`h-10 w-10 ${categoryId === cat.id ? "animate-bounce" : "text-slate-500 dark:text-slate-400"}`} />
+                <span className="text-sm font-semibold">{cat.name}</span>
               </div>
             ))}
           </div>
@@ -174,10 +175,12 @@ export function BookingForm() {
             <div className="space-y-2">
               <Label>Upload Image for AI Analysis</Label>
               {!imageUploaded ? (
-                <label className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-10 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
-                  <UploadCloud className="h-10 w-10 text-slate-400 mb-4" />
-                  <p className="font-medium">Click to upload or drag and drop</p>
-                  <p className="text-sm text-slate-500 mt-1">Gemini AI will automatically categorize your item and detect hazards.</p>
+                <label className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-12 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 hover:border-green-400 transition-all duration-300 group">
+                  <div className="h-16 w-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 group-hover:bg-green-100 dark:group-hover:bg-green-900/50 transition-colors duration-300">
+                    <UploadCloud className="h-8 w-8 text-slate-500 group-hover:text-green-600 dark:group-hover:text-green-400" />
+                  </div>
+                  <p className="font-semibold text-lg">Click to upload or drag and drop</p>
+                  <p className="text-sm text-slate-500 mt-2 max-w-sm">Gemini AI will automatically categorize your item and detect hazards.</p>
                   <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                 </label>
               ) : (
@@ -237,28 +240,37 @@ export function BookingForm() {
 
         {step === 4 && (
           <div className="space-y-6">
-            <div className="rounded-lg border bg-slate-50 dark:bg-slate-900/50 p-6 space-y-4">
-              <div className="flex items-start gap-3">
-                <Box className="h-5 w-5 text-slate-500 mt-0.5" />
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-gradient-to-br from-slate-50 to-white dark:from-slate-900/50 dark:to-slate-900 p-8 space-y-6 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                <Box className="w-40 h-40" />
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="h-12 w-12 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Box className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
                 <div>
-                  <p className="font-medium">Items to Recycle</p>
-                  <p className="text-sm text-slate-500">
-                    {quantity}x {CATEGORIES.find(c => c.id === categoryId)?.name} (~{weight} kg)
+                  <p className="font-semibold text-lg text-slate-900 dark:text-white">Items to Recycle</p>
+                  <p className="text-slate-600 dark:text-slate-400 mt-1">
+                    {quantity}x <span className="font-medium">{CATEGORIES.find(c => c.id === categoryId)?.name}</span> (~{weight} kg)
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-slate-500 mt-0.5" />
+              <div className="flex items-start gap-4">
+                <div className="h-12 w-12 bg-orange-100 dark:bg-orange-900/50 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <MapPin className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                </div>
                 <div>
-                  <p className="font-medium">Pickup Location</p>
-                  <p className="text-sm text-slate-500">{address}</p>
+                  <p className="font-semibold text-lg text-slate-900 dark:text-white">Pickup Location</p>
+                  <p className="text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">{address}</p>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <Calendar className="h-5 w-5 text-slate-500 mt-0.5" />
+              <div className="flex items-start gap-4">
+                <div className="h-12 w-12 bg-green-100 dark:bg-green-900/50 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Calendar className="h-6 w-6 text-green-600 dark:text-green-400" />
+                </div>
                 <div>
-                  <p className="font-medium">Schedule</p>
-                  <p className="text-sm text-slate-500">{date} • {time}</p>
+                  <p className="font-semibold text-lg text-slate-900 dark:text-white">Schedule</p>
+                  <p className="text-slate-600 dark:text-slate-400 mt-1">{date} <span className="mx-2">•</span> {time}</p>
                 </div>
               </div>
             </div>
@@ -266,11 +278,12 @@ export function BookingForm() {
         )}
       </CardContent>
 
-      <CardFooter className="flex justify-between border-t p-6 bg-slate-50/50 dark:bg-slate-900/20 rounded-b-xl">
+      <CardFooter className="flex justify-between border-t border-slate-100 dark:border-slate-800 p-6 bg-slate-50/80 dark:bg-slate-900/30 rounded-b-3xl">
         <Button 
           variant="outline" 
           onClick={() => setStep(step - 1)} 
           disabled={step === 1 || isSubmitting}
+          className="rounded-xl px-6 h-12"
         >
           Back
         </Button>
@@ -282,11 +295,12 @@ export function BookingForm() {
               (step === 2 && (!quantity || !weight || !imageUploaded)) ||
               (step === 3 && (!address || !date || !time))
             }
+            className="rounded-xl px-6 h-12 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
           >
             Continue <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
         ) : (
-          <Button onClick={handleSubmit} disabled={isSubmitting} className="bg-green-600 hover:bg-green-700">
+          <Button onClick={handleSubmit} disabled={isSubmitting} className="rounded-xl px-8 h-12 bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white shadow-lg shadow-green-500/20 text-base font-semibold transition-all duration-300">
             {isSubmitting ? "Confirming..." : "Confirm Booking"}
           </Button>
         )}

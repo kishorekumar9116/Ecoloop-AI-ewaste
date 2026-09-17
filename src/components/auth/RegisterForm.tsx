@@ -124,7 +124,7 @@ export function RegisterForm() {
         </div>
         <CardTitle className="text-2xl font-bold tracking-tight">Create an Account</CardTitle>
         <CardDescription className="text-slate-500">
-          Join EcoLoop AI and start recycling responsibly today.
+          Join E-CoLink and start recycling responsibly today.
         </CardDescription>
       </CardHeader>
       <CardContent>

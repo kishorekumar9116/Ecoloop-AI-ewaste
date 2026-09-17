@@ -27,7 +27,7 @@ export function Header() {
         <SheetContent side="left" className="w-64 p-0">
            {/* Mobile sidebar content can go here */}
            <div className="p-6">
-             <Link href="/" className="font-bold text-xl text-primary">EcoLoop AI</Link>
+             <Link href="/" className="font-bold text-xl text-primary">E-CoLink</Link>
            </div>
         </SheetContent>
       </Sheet>

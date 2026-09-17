@@ -34,7 +34,7 @@ const ROLES: { id: Role; title: string; description: string; icon: React.Element
   { id: "CUSTOMER", title: "Customer", description: "Schedule and track your e-waste pickups", icon: User },
   { id: "COLLECTOR", title: "Collector", description: "Manage and complete e-waste collections", icon: Truck },
   { id: "RECYCLER", title: "Recycler", description: "Receive, process and recycle collected e-waste", icon: Recycle },
-  { id: "ADMIN", title: "Admin", description: "Manage the EcoLoop AI ecosystem", icon: ShieldCheck },
+  { id: "ADMIN", title: "Admin", description: "Manage the E-CoLink ecosystem", icon: ShieldCheck },
 ];
 
 export function LoginForm() {
@@ -90,7 +90,7 @@ export function LoginForm() {
     <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
       <div className="space-y-6">
         <div className="text-center md:text-left mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">Welcome to EcoLoop AI</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">Welcome to E-CoLink</h1>
           <p className="text-lg text-slate-600 dark:text-slate-400">Smart E-Waste Collection, Tracking & Recycling</p>
         </div>
         
@@ -148,7 +148,7 @@ export function LoginForm() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder={`${selectedRole.toLowerCase()}@ecoloop.demo`} type="email" disabled={isLoading} {...field} />
+                      <Input placeholder={`${selectedRole.toLowerCase()}@ecolink.demo`} type="email" disabled={isLoading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

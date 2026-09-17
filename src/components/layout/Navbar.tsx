@@ -8,7 +8,7 @@ export function Navbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center space-x-2">
           <Leaf className="h-6 w-6 text-green-600" />
-          <span className="text-xl font-bold tracking-tight text-primary">EcoLoop AI</span>
+          <span className="text-xl font-bold tracking-tight text-primary">E-CoLink</span>
         </Link>
         <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
           <Link href="#how-it-works" className="transition-colors hover:text-foreground/80 text-foreground/60">How it Works</Link>

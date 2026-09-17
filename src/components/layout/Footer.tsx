@@ -9,7 +9,7 @@ export function Footer() {
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <Leaf className="h-6 w-6 text-green-600" />
-              <span className="text-xl font-bold tracking-tight text-primary">EcoLoop AI</span>
+              <span className="text-xl font-bold tracking-tight text-primary">E-CoLink</span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs mb-6">
               Intelligent e-waste collection, tracking, and recycling platform. Making disposal simple, transparent, and environmentally responsible.
@@ -43,7 +43,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} EcoLoop AI. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} E-CoLink. All rights reserved.</p>
         </div>
       </div>
     </footer>

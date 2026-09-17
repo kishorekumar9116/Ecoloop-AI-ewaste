@@ -27,7 +27,7 @@ export default function Home() {
                     </span>
                   </h1>
                   <p className="max-w-[600px] text-lg text-slate-600 dark:text-slate-300 md:text-xl/relaxed font-medium">
-                    EcoLoop AI connects you with certified recyclers. Schedule a pickup, track your e-waste in real-time, and earn premium rewards for environmentally responsible disposal.
+                    E-CoLink connects you with certified recyclers. Schedule a pickup, track your e-waste in real-time, and earn premium rewards for environmentally responsible disposal.
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -42,14 +42,7 @@ export default function Home() {
                     </Button>
                   </Link>
                 </div>
-                <div className="flex items-center gap-4 pt-8 text-sm text-slate-600 dark:text-slate-400">
-                  <div className="flex -space-x-3">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="inline-block h-10 w-10 rounded-full ring-4 ring-white dark:ring-slate-950 bg-gradient-to-br from-slate-200 to-slate-300 shadow-sm" />
-                    ))}
-                  </div>
-                  <p className="font-medium">Join <span className="font-bold text-slate-900 dark:text-white">10,000+</span> users recycling responsibly.</p>
-                </div>
+
               </div>
               <div className="mx-auto flex w-full max-w-[500px] items-center justify-center lg:max-w-none relative">
                 {/* Abstract visualization replacing image for now */}
@@ -97,7 +90,7 @@ export default function Home() {
           <div className="absolute top-0 right-0 -mr-40 -mt-40 w-96 h-96 rounded-full bg-green-50 dark:bg-green-900/10 blur-3xl pointer-events-none"></div>
           <div className="container px-4 md:px-6 mx-auto relative z-10">
             <div className="text-center max-w-3xl mx-auto mb-20">
-              <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900 dark:text-white mb-6">How EcoLoop AI Works</h2>
+              <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-slate-900 dark:text-white mb-6">How E-CoLink Works</h2>
               <p className="text-xl text-slate-600 dark:text-slate-400 leading-relaxed">
                 A seamless end-to-end platform connecting households and businesses with certified e-waste recyclers.
               </p>

@@ -128,7 +128,7 @@ export function Sidebar() {
         <div className="flex h-16 items-center border-b px-6">
           <Link href="/" className="flex items-center gap-2 font-bold text-primary">
             <Leaf className="h-6 w-6 text-green-600" />
-            <span>EcoLoop AI</span>
+            <span>E-CoLink</span>
           </Link>
         </div>
         <div className="flex-1 overflow-auto py-4">

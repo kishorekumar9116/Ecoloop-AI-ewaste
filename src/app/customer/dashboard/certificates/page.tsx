@@ -64,7 +64,7 @@ export default async function CustomerCertificatesPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Recycler</span>
-                    <span className="font-medium">{cert.batch?.recycler?.companyName || "EcoLoop Partner"}</span>
+                    <span className="font-medium">{cert.batch?.recycler?.companyName || "E-CoLink Partner"}</span>
                   </div>
                 </div>
               </CardContent>

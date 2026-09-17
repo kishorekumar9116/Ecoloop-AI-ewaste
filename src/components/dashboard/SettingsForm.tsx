@@ -119,7 +119,7 @@ export function SettingsForm() {
             <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800 pb-4">
               <CardTitle>Appearance</CardTitle>
               <CardDescription>
-                Customize how EcoLoop AI looks on your device.
+                Customize how E-CoLink looks on your device.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-6">

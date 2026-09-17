@@ -4,7 +4,7 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
-  title: "EcoLoop AI - Smart E-Waste Management",
+  title: "E-CoLink - Smart E-Waste Management",
   description: "Intelligent e-waste collection, tracking, and recycling platform.",
 };
 
